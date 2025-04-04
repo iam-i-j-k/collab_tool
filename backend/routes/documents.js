@@ -1,7 +1,25 @@
 const express = require('express');
 const Document = require('../models/Document');
-const { verifyToken } = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
+
+// Verify token middleware
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        console.log('Decoded user:', decoded); // Debug log
+        next();
+    } catch (error) {
+        console.error('Token verification failed:', error);
+        res.status(403).json({ message: 'Invalid token' });
+    }
+};
 
 // Check if the user has the required role
 function checkRole(requiredRole) {
@@ -23,16 +41,26 @@ router.get('/', verifyToken, async (req, res) => {
     }
 });
 
-// Get a single document by ID (only if the user owns it)
+// Get all documents (accessible to authorized users)
+router.get('/all', verifyToken, async (req, res) => {
+    try {
+        const documents = await Document.find(); // Fetch all documents
+        res.json(documents);
+    } catch (error) {
+        console.error('Error fetching all documents:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Get a single document by ID (accessible to all authorized users)
 router.get('/:id', verifyToken, async (req, res) => {
     try {
         const document = await Document.findById(req.params.id);
         if (!document) {
             return res.status(404).json({ message: 'Document not found' });
         }
-        if (document.owner.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'Not authorized' });
-        }
+
+        // Remove ownership restriction to allow access to all documents
         res.json(document);
     } catch (error) {
         console.error('Error fetching document:', error);

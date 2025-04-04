@@ -54,7 +54,15 @@ router.post("/register", async (req, res) => {
     // Generate JWT Token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.status(201).json({ username: user.name, role: user.role, token });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
     console.error("Error in registration:", error);
     res.status(500).json({ error: "Server error" });
@@ -83,7 +91,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     // Include the role in the response
-    res.json({ username: user.name, role: user.role, token });
+    res.json({ name: user.name, role: user.role, token, email: user.email, token });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
@@ -92,7 +100,7 @@ router.post("/login", async (req, res) => {
 
 // PUT: Update User
 router.put("/update", authenticateToken, async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
     // Find the user by ID from the token
@@ -107,7 +115,7 @@ router.put("/update", authenticateToken, async (req, res) => {
     }
 
     // Update user fields
-    if (name) user.name = name;
+    if (username) user.name = username;
     if (email) user.email = email;
     if (password) {
       const salt = await bcrypt.genSalt(10);
