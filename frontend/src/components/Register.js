@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react'; // Import useContext
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { Mail, User, Lock, ArrowRight, Users } from 'lucide-react';
+import { UserContext } from '../context/UserContext'; // Import UserContext
 import './register.css';
 
 export default function Register() {
@@ -13,6 +14,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext); // Access setUser from UserContext
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -28,6 +30,7 @@ export default function Register() {
       });
       sessionStorage.setItem('token', data.token);
       sessionStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user); // Update the user context
       navigate('/dashboard');
     } catch (error) {
       if (error.response?.data?.message) {

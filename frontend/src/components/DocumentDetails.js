@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { getDocumentById, updateDocument, deleteDocument } from "../services/documentService"
 import { io } from "socket.io-client"
 import axios from "axios"
 import "./document-details.css"
+import { UserContext } from "../context/UserContext"
 
 const DocumentDetails = () => {
   const socket = io("http://localhost:5000")
@@ -18,6 +19,7 @@ const DocumentDetails = () => {
   const [successMessage, setSuccessMessage] = useState(null)
   const [cursors, setCursors] = useState([])
   const [versions, setVersions] = useState([])
+  const { user } = useContext(UserContext); // Access user from context
   const [userRole, setUserRole] = useState("")
   const [isEditing, setIsEditing] = useState(false)
   const [showVersions, setShowVersions] = useState(false)
@@ -88,19 +90,13 @@ const DocumentDetails = () => {
   }, [])
 
   useEffect(() => {
-    // Fetch user role from sessionStorage
-    try {
-      const user = JSON.parse(sessionStorage.getItem("user") || "{}")
-      if (user && user.role) {
-        setUserRole(user.role)
-      } else {
-        setUserRole("viewer") // Default to 'viewer' if no role is found
-      }
-    } catch (error) {
-      console.error("Failed to parse user data:", error)
-      setUserRole("viewer")
+    // Set user role from context
+    if (user && user.role) {
+      setUserRole(user.role);
+    } else {
+      setUserRole("viewer"); // Default to 'viewer' if no role is found
     }
-  }, [])
+  }, [user]);
 
   const handleUpdate = async () => {
     try {

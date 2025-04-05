@@ -1,83 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { User, Mail, Lock, Shield, Save, AlertTriangle, ChevronRight, Check } from 'lucide-react';
 import './settings.css';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext'; // Import UserContext
 
 export default function Settings() {
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useContext(UserContext); // Use UserContext
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('account');
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
-  
+
   // Form states
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
-  
+
   // Password strength
   const [passwordStrength, setPasswordStrength] = useState(0);
-  
+
   useEffect(() => {
-    // Get user data from sessionStorage
-    const userString = sessionStorage.getItem("user");
-    if (userString) {
-      const userData = JSON.parse(userString);
-      setUser(userData);
-      setUsername(userData.name || '');
-      setEmail(userData.email || '');
-      setRole(userData.role || 'viewer');
+    if (user) {
+      setUsername(user.name || '');
+      setEmail(user.email || '');
+      setRole(user.role || 'viewer');
     } else {
       // Redirect if no user is logged in
       navigate('/login');
     }
-  }, [navigate]);
-  
+  }, [user, navigate]);
+
   useEffect(() => {
     // Simple password strength checker
     if (!password) {
       setPasswordStrength(0);
       return;
     }
-    
+
     let strength = 0;
     if (password.length >= 8) strength += 1;
     if (/[A-Z]/.test(password)) strength += 1;
     if (/[0-9]/.test(password)) strength += 1;
     if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    
+
     setPasswordStrength(strength);
   }, [password]);
-  
+
   const handleSave = async () => {
     setIsLoading(true);
     try {
       const token = sessionStorage.getItem("token");
-      
+
       const response = await fetch("http://localhost:5000/api/auth/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
-          username, 
-          email, 
+        body: JSON.stringify({
+          username,
+          email,
           password: password || undefined, // Only send password if it's not empty
-          role 
+          role,
         }),
       });
 
       if (response.ok) {
         const updatedUser = await response.json();
-        sessionStorage.setItem("user", JSON.stringify(updatedUser.user));
-        
+        const { password, ...userWithoutPassword } = updatedUser.user; // Exclude password
+        setUser(userWithoutPassword); // Update user in context
+        sessionStorage.setItem("user", JSON.stringify(userWithoutPassword));
+
         // Show success toast
         setShowSuccessToast(true);
         setTimeout(() => setShowSuccessToast(false), 3000);
-        
+
         // Clear password field after successful update
         setPassword('');
       } else {
@@ -106,6 +105,7 @@ export default function Settings() {
       if (response.ok) {
         sessionStorage.removeItem("user");
         sessionStorage.removeItem("token");
+        setUser(null); // Clear user in context
         navigate("/");
       } else {
         const error = await response.json();
@@ -119,7 +119,7 @@ export default function Settings() {
       setShowDeleteModal(false);
     }
   };
-  
+
   if (!user) {
     return <div className="settings-loading">Loading settings...</div>;
   }

@@ -20,7 +20,7 @@ const Login = () => {
     try {
       const { data } = await axios.post("http://localhost:5000/api/auth/login", { email, password })
 
-      const userData = { name: data.name, token: data.token, email: data.email }
+      const userData = { name: data.name, token: data.token, email: data.email, role: data.role }
       sessionStorage.setItem("user", JSON.stringify(userData))
       sessionStorage.setItem("token", data.token)
 

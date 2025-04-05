@@ -91,9 +91,7 @@ router.put('/:id', verifyToken, checkRole('editor'), async (req, res) => {
         if (!document) {
             return res.status(404).json({ message: 'Document not found' });
         }
-        if (document.owner.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'Not authorized' });
-        }
+
 
         // Save the current version before updating
         document.versions.push({
@@ -133,7 +131,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
     }
 });
 
-router.post('/:id/undo', verifyToken, checkRole('editor'), async (req, res) => {
+router.post('/:id/undo', verifyToken, async (req, res) => {
     try {
         const document = await Document.findById(req.params.id);
         if (!document) {
