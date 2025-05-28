@@ -1,11 +1,11 @@
 import axios from "axios"
 
-const API_BASE_URL = "http://localhost:5000/api/documents"
+const API_BASE_URL = `${import.meta.env.BACKEND_URL}/api/documents`
 
 export const getDocumentById = async (id) => {
   try {
     const token = sessionStorage.getItem("token")
-    const response = await axios.get(`${API_BASE_URL}/${id}`, {
+    const response = await axios.get(`${import.meta.env.BACKEND_URL}/api/documents/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -20,7 +20,7 @@ export const getDocumentById = async (id) => {
 export const updateDocument = async (id, data) => {
   try {
     const token = sessionStorage.getItem("token")
-    const response = await axios.put(`${API_BASE_URL}/${id}`, data, {
+    const response = await axios.put(`${import.meta.env.BACKEND_URL}/api/documents/${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -36,7 +36,7 @@ export const updateDocument = async (id, data) => {
 export const deleteDocument = async (id) => {
   try {
     const token = sessionStorage.getItem("token")
-    await axios.delete(`${API_BASE_URL}/${id}`, {
+    await axios.delete(`${import.meta.env.BACKEND_URL}/api/documents/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
