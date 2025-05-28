@@ -53,7 +53,7 @@ export default function Settings() {
     try {
       const token = sessionStorage.getItem("token");
 
-      const response = await fetch(`${process.env.BACKEND_URL}/api/auth/update`, {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/auth/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -95,7 +95,7 @@ export default function Settings() {
     setIsLoading(true);
     try {
       const token = sessionStorage.getItem("token");
-      const response = await fetch(`${process.env.BACKEND_URL}/api/auth/delete`, {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/auth/delete`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

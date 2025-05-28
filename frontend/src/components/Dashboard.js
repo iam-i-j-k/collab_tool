@@ -24,14 +24,14 @@ export default function Dashboard() {
         const token = sessionStorage.getItem('token');
 
         // Fetch user's documents
-        const userDocsResponse = await axios.get(`${process.env.BACKEND_URL}/api/documents`, {
+        const userDocsResponse = await axios.get(`${process.env.REACT_APP_URL}/api/documents`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         // Fetch all documents
-        const allDocsResponse = await axios.get(`${process.env.BACKEND_URL}/api/documents/all`, {
+        const allDocsResponse = await axios.get(`${process.env.REACT_APP_URL}/api/documents/all`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

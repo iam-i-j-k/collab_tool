@@ -6,6 +6,7 @@ import { Mail, User, Lock, ArrowRight, Users } from 'lucide-react';
 import { UserContext } from '../context/UserContext'; // Import UserContext
 import './register.css';
 
+
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      const { data } = await axios.post(`${process.env.BACKEND_URL}/api/auth/register`, { 
+      const { data } = await axios.post(`${process.env.REACT_APP_URL}/api/auth/register`, { 
         name, 
         email, 
         password,

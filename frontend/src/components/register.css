@@ -166,12 +166,15 @@
 
 .error-message {
   background-color: #fee2e2;
+  position: absolute;
+  top: 1rem;
   color: #ef4444;
   padding: 0.75rem 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
   animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  z-index: 100;
 }
 
 /* Loading Spinner */
