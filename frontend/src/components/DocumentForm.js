@@ -26,7 +26,7 @@ export default function DocumentForm() {
       const user = JSON.parse(sessionStorage.getItem('user') || '{}');
       const token = sessionStorage.getItem('token');
       
-      const { data } = await axios.post(`${import.meta.env.BACKEND_URL}/api/documents`, 
+      const { data } = await axios.post(`${process.env.BACKEND_URL}/api/documents`, 
         { title, content }, 
         {
           headers: {

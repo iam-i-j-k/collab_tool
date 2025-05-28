@@ -22,7 +22,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      const { data } = await axios.post(`${import.meta.env.BACKEND_URL}/api/auth/register`, { 
+      const { data } = await axios.post(`${process.env.BACKEND_URL}/api/auth/register`, { 
         name, 
         email, 
         password,

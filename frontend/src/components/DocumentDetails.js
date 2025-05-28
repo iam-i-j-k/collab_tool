@@ -8,8 +8,9 @@ import axios from "axios"
 import "./document-details.css"
 import { UserContext } from "../context/UserContext"
 
+
 const DocumentDetails = () => {
-  const socket = io(`${import.meta.env.BACKEND_URL}`)
+  const socket = io(`${process.env.BACKEND_URL}`)
   const { id } = useParams()
   const navigate = useNavigate()
   const [document, setDocument] = useState(null)
@@ -74,7 +75,7 @@ const DocumentDetails = () => {
   const fetchVersions = async () => {
     try {
       const token = sessionStorage.getItem("token")
-      const { data } = await axios.get(`${import.meta.env.BACKEND_URL}/api/documents/${id}/versions`, {
+      const { data } = await axios.get(`${process.env.BACKEND_URL}/api/documents/${id}/versions`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -133,7 +134,7 @@ const DocumentDetails = () => {
     try {
       const token = sessionStorage.getItem("token");
       const { data } = await axios.post(
-        `${import.meta.env.BACKEND_URL}/api/documents/${id}/undo`,
+        `${process.env.BACKEND_URL}/api/documents/${id}/undo`,
         {},
         {
           headers: {
