@@ -20,8 +20,6 @@ export const getDocumentById = async (id) => {
 export const updateDocument = async (id, data) => {
   try {
     const token = sessionStorage.getItem("token")
-    console.log(token)
-    console.log(data)
     const response = await axios.put(`${API_BASE_URL}/${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
