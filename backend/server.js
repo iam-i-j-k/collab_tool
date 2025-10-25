@@ -30,8 +30,14 @@ const io = new Server(server, {
 
 // Middleware and routes
 app.use(express.json());
+app.use('/uploads', express.static('uploads')); // Serve uploaded files
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
+
+// Root route - must be after API routes
+app.use('/', (req,res) => {
+    res.send("API is running....");
+});
 
 //connection happens when a io called made from socket.io client
 io.on('connection', (socket) => {
@@ -55,5 +61,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port http://localhost:${PORT}`);
 });

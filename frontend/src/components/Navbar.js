@@ -56,6 +56,23 @@ const Navbar = () => {
     return `linear-gradient(45deg, hsl(${hue1}, 80%, 60%), hsl(${hue2}, 80%, 60%))`;
   };
 
+  const getAvatarContent = (user) => {
+    if (user?.profileImage) {
+      return (
+        <img 
+          src={`${process.env.REACT_APP_URL}${user.profileImage}`}
+          alt={user.name}
+          className="avatar-image"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'block';
+          }}
+        />
+      );
+    }
+    return <span>{user?.name?.charAt(0).toUpperCase()}</span>;
+  };
+
   return (
     <nav className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
       <div className="navbar-container">
@@ -84,7 +101,10 @@ const Navbar = () => {
                 onClick={toggleDropdown}
                 style={{ background: getAvatarGradient(user.name) }}
               >
-                <span>{user.name.charAt(0).toUpperCase()}</span>
+                {getAvatarContent(user)}
+                <span style={{ display: user?.profileImage ? 'none' : 'block' }}>
+                  {user?.name?.charAt(0).toUpperCase()}
+                </span>
               </button>
 
               <div className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}>

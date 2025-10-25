@@ -7,7 +7,7 @@
 
 /* Registration Page Styles */
 .register-container {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -59,6 +59,29 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e1e5ee;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f9fafc;
+  resize: vertical; /* allow vertical resizing */
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  background-color: white;
+}
+
+.form-group textarea::placeholder {
+  color: #a0aec0;
+}
+
 
 .form-group label {
   display: flex;
@@ -113,6 +136,59 @@
   background-color: white;
 }
 
+/* Radio and Checkbox groups (Gender / Interests) */
+.radio-group,
+.checkbox-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.radio-group label,
+.checkbox-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background-color: #f7f8fb;
+  border: 1px solid #eef2ff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+  transition: all 0.15s ease;
+}
+
+.radio-group input[type="radio"],
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #6366f1; /* modern browsers */
+}
+
+.radio-group label:hover,
+.checkbox-group label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.08);
+}
+
+
+
+/* Smaller spacing for mobile */
+@media (max-width: 420px) {
+  .radio-group,
+  .checkbox-group {
+    gap: 0.5rem;
+  }
+  .radio-group label,
+  .checkbox-group label {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
 .register-button {
   margin-top: 1rem;
   padding: 0.9rem 1.5rem;
@@ -145,6 +221,7 @@
   transform: none;
 }
 
+
 .register-footer {
   margin-top: 2rem;
   text-align: center;
@@ -166,15 +243,15 @@
 
 .error-message {
   background-color: #fee2e2;
-  position: absolute;
-  top: 1rem;
+  position: relative;
+  margin-top: 0.5rem;
+  top: 0;
   color: #ef4444;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  margin-bottom: 1.5rem;
   font-size: 0.9rem;
   animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  z-index: 100;
+  z-index: 1000;
 }
 
 /* Loading Spinner */

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useContext } from "react"
-import { useParams, useNavigate, useLocation } from "react-router-dom"
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom"
 import { getDocumentById, updateDocument, deleteDocument } from "../services/documentService"
 import { io } from "socket.io-client"
 import axios from "axios"
@@ -190,7 +190,22 @@ const DocumentDetails = () => {
 
       {/* Notification for user role */}
       <div className="role-notification">
-        You are viewing as <strong>{userRole}</strong>. You can update your role in the settings.
+        <p style={{ fontSize: "0.95rem", color: "#333" }}>
+          You are viewing as <strong>{userRole}</strong>. You can update your role in{" "}
+          <Link
+            to="/settings"
+            style={{
+              color: "#6366f1", 
+              fontWeight: "500",
+              textDecoration: "none",
+              transition: "color 0.3s ease",
+            }}
+            onMouseEnter={(e) => (e.target.style.color = "#4f46e5")} // darker blue on hover
+            onMouseLeave={(e) => (e.target.style.color = "#6366f1")}
+          >
+            settings
+          </Link>.
+        </p>
       </div>
 
       {/* Notify viewer about editing restrictions */}

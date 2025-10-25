@@ -1,7 +1,44 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs').promises;
 const User = require('../models/User');
+
+// Configure multer for file upload
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const uploadDir = 'uploads/profile-images';
+    try {
+      await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    } catch (error) {
+      cb(error, null);
+    }
+  },
+  filename: (req, file, cb) => {
+    // Create unique filename with timestamp
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (extname && mimetype) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'));
+    }
+  }
+});
 
 const router = express.Router();
 
@@ -23,37 +60,78 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-router.post("/register", async (req, res) => {
-  const { name, email, password, role } = req.body; // Include role in the request body
-
+router.post("/register", upload.single('profileImage'), async (req, res) => {
   try {
+    const {
+      name,
+      email,
+      password,
+      role,
+      gender,
+      bio,
+      subscribe,
+      joinCommunity
+    } = req.body;
+
     // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
+      // Delete uploaded file if it exists
+      if (req.file) {
+        await fs.unlink(req.file.path);
+      }
       return res.status(400).json({ message: "User already exists" });
     }
 
     // Validate role
     if (role && !['viewer', 'editor'].includes(role)) {
+      if (req.file) {
+        await fs.unlink(req.file.path);
+      }
       return res.status(400).json({ message: "Invalid role" });
     }
 
-    // 🔥 Hash password before saving
+    // Validate gender
+    if (gender && !['male', 'female', 'other'].includes(gender)) {
+      if (req.file) {
+        await fs.unlink(req.file.path);
+      }
+      return res.status(400).json({ message: "Invalid gender" });
+    }
+
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Save user with hashed password and role
-    const user = new User({ 
-      name, 
-      email, 
-      password: hashedPassword, 
-      role: role 
-    });
+    // Create user object with all fields
+    const userData = {
+      name,
+      email,
+      password: hashedPassword,
+      role: role || 'viewer',
+      gender: gender || 'other',
+      bio: bio || '',
+      subscribe: subscribe === 'true' || subscribe === true,
+      joinCommunity: joinCommunity === 'true' || joinCommunity === true
+    };
+
+    // Add profile image path if file was uploaded
+    if (req.file) {
+      userData.profileImage = `/uploads/profile-images/${req.file.filename}`;
+    }
+
+    // Save user
+    const user = new User(userData);
     await user.save();
 
     // Generate JWT Token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
+    // Return success response with user data
     res.status(201).json({
       token,
       user: {
@@ -61,11 +139,20 @@ router.post("/register", async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        gender: user.gender,
+        bio: user.bio,
+        subscribe: user.subscribe,
+        joinCommunity: user.joinCommunity,
+        profileImage: user.profileImage
       },
     });
   } catch (error) {
+    // Delete uploaded file if there was an error
+    if (req.file) {
+      await fs.unlink(req.file.path).catch(console.error);
+    }
     console.error("Error in registration:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -90,8 +177,21 @@ router.post("/login", async (req, res) => {
     // Generate a JWT token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    // Include the role in the response
-    res.json({ name: user.name, role: user.role, token, email: user.email, token });
+    // Include all necessary user data in response
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        gender: user.gender,
+        bio: user.bio,
+        subscribe: user.subscribe,
+        joinCommunity: user.joinCommunity,
+        profileImage: user.profileImage
+      }
+    });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
