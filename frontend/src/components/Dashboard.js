@@ -52,7 +52,7 @@ export default function Dashboard() {
     };
 
     fetchDocuments();
-  }, []);
+  }, [navigate]);
 
   const filteredDocuments = documents.filter(doc => 
     doc.title.toLowerCase().includes(searchTerm.toLowerCase())

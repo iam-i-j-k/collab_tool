@@ -23,7 +23,6 @@ export default function DocumentForm() {
     setIsSaving(true);
     
     try {
-      const user = JSON.parse(sessionStorage.getItem('user') || '{}');
       const token = sessionStorage.getItem('token');
       
       const { data } = await axios.post(`${process.env.REACT_APP_URL}/api/documents`, 

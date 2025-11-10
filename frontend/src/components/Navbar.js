@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ChevronDown, Settings, LogOut, User } from "lucide-react";
+import { Menu, X, Settings, LogOut } from "lucide-react";
 import "./navbar.css";
 import { UserContext } from "../context/UserContext";
 

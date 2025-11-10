@@ -22,7 +22,6 @@ const DocumentDetails = () => {
   const [versions, setVersions] = useState([])
   const { user } = useContext(UserContext); // Access user from context
   const [userRole, setUserRole] = useState("")
-  const [isEditing, setIsEditing] = useState(false)
   const [showVersions, setShowVersions] = useState(false)
 
   const location = useLocation()
@@ -72,6 +71,7 @@ const DocumentDetails = () => {
     }
   }, [id, socket])
 
+useEffect(() => {
   const fetchVersions = async () => {
     try {
       const token = sessionStorage.getItem("token")
@@ -86,9 +86,8 @@ const DocumentDetails = () => {
     }
   }
 
-  useEffect(() => {
-    fetchVersions()
-  }, [fetchVersions])
+  fetchVersions()
+}, [id])
 
   useEffect(() => {
     // Set user role from context
