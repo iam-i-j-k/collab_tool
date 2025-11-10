@@ -102,9 +102,6 @@ const Navbar = () => {
                 style={{ background: getAvatarGradient(user.name) }}
               >
                 {getAvatarContent(user)}
-                <span style={{ display: user?.profileImage ? 'none' : 'block' }}>
-                  {user?.name?.charAt(0).toUpperCase()}
-                </span>
               </button>
 
               <div className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}>
