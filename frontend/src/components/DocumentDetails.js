@@ -88,7 +88,7 @@ const DocumentDetails = () => {
 
   useEffect(() => {
     fetchVersions()
-  }, [])
+  }, [fetchVersions])
 
   useEffect(() => {
     // Set user role from context
